@@ -186,7 +186,7 @@ choice.low.m = choice.z %>% filter(rank <= median)
 #generate the linear regression model
 m.i.v = glmer(chosehigh.value~1+abs.delta.v.z+(1+abs.delta.v.z|ID), 
            data = choice.low.m, family = "binomial",
-           control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
+           control=glmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 
 #reporting stats
 tidy(m.i.v,conf.int=TRUE,exponentiate=TRUE,effects="fixed")
@@ -403,7 +403,7 @@ cor.test(mem$rep.z, mem$Memorability)
 ```
 
 
-## Experiment 2B: word memorability (N = 199)
+## Experiment 2B: word memorability (N = 195)
 
 Load the cleaned data from **Exp2B.csv**, and applied function to calculate the memorability score of word for food items.
 
