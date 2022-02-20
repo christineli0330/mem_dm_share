@@ -340,7 +340,8 @@ Relationship between **RT** and **item memorability** for trials (N = 2939) that
 ```{r}
 #lmer model for RT ~ memorability
 m4.value.log = lmer(log(rt) ~ abs.mem + (abs.mem|ID), 
-           data = choice.m.plt)
+           data = choice.m.plt,
+           control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 # calculate coefficient for RT model
 confint(m4.value.log,method="Wald")
 
@@ -386,7 +387,7 @@ rep = rep %>% dplyr::group_by(run_id) %>% dplyr::mutate(z.score = scale(as.numer
 rep.mean = rep %>% dplyr::group_by(word) %>% 
   dplyr::summarize(rep = mean(as.numeric(response)), rep.z = mean(z.score), n = n()) %>% 
   select(-n)
-mem = merge(rep.mean, mem, by.x = "word", by.y = "food.item.e")
+mem = merge(rep.mean, mem, by.x = "word", by.y = "food.item")
 ```
 
 Positive correlation between representative measurement and image values
@@ -404,26 +405,27 @@ cor.test(mem$rep.z, mem$Memorability)
 
 ## Experiment 2B: word memorability (N = 199)
 
+Load the cleaned data from **Exp2B.csv**, and applied function to calculate the memorability score of word for food items.
+
 ```{r}
 #Load memorability data
-dat.w = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/word_all_mem_exclude_mat.csv")
+dat.w = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/Exp2B.csv")
 
 #apply function for calculating memorability scores
 img.values.w = calculate_mem(dat.w) %>% dplyr::rename(word.mem = Memorability)
 
 #summarize data and combine it with image/word indexes
 summary(img.values.w)
-mem = merge(img.values.w, mem, by.x = "image", by.y = "food.item")
+mem = merge(img.values.w, mem, by.x = "image", by.y = "word")
 ```
 
-
-Correlation between image and word memorability.
+No correlation between image and word memorability.
 
 ```{r}
 cor.test(mem$Memorability, mem$word.mem)
 ```
 
-Correlation between word memorability and representativness of word/image pairs
+No correlation between word memorability and representativness of word/image pairs
 
 ```{r}
 cor.test(mem$word.mem, mem$rep.z)
@@ -432,7 +434,7 @@ cor.test(mem$word.mem, mem$rep.z)
 
 ### Distribution of word memorability (Figure 5A)
 
-Plot the distribution of image memorability scores. The vertical line represents for the median of memorability scores = 0.24
+Plot the distribution of image memorability scores. The vertical line represents for the median of memorability scores = 0.25
 
 The lowest one is **skittles**, and the highest one is **kit kat**
 
@@ -440,11 +442,11 @@ The lowest one is **skittles**, and the highest one is **kit kat**
 ## ggplot histogram
 hist.mem.word = ggplot(mem, aes(x=word.mem)) + 
   geom_histogram(color="steelblue", fill="white", bins = 25) + 
-  geom_vline(xintercept = 0.26,linetype = "dashed") +
+  geom_vline(xintercept = 0.25,linetype = "dashed") +
   theme_classic(base_size = 26)+xlab("Word Memorability")
 
 hist.mem.word
-ggsave('C:/Users/Christine/Box Sync/data/mem_dm_all_results/visualization/hist_word_m_updated.png', width = 8, height = 6, units = 'in')
+ggsave('C:/Users/Christine/Box Sync/data/mem_dm_all_results/visualization/hist_word.png', width = 8, height = 6, units = 'in')
 ```
 
 ### Split-half consistency analysis (Figure 5B)
@@ -519,7 +521,7 @@ rating.w = dm.word %>% filter(ttype == 'rating_task') %>%
 values.word = rating.w %>% dplyr::group_by(word) %>% 
   dplyr::summarise(word.value = mean(as.numeric(response)))
 #combine mean values with mem measures
-mem = merge(values.word, mem, by = "word", sort = TRUE)
+mem = merge(values.word, mem, by.x = "word", by.y = "image", sort = TRUE)
 ```
 
 
@@ -657,7 +659,7 @@ choice.low.v.w = choice.test %>% filter(rank.v <= median.v)
 # generate the model
 m.w.m = glmer(chosehigh.mem~1+abs.mem+(1+abs.mem|ID),
            data = choice.low.v.w, family = "binomial",
-           glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 100000)))
+           control=glmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 tidy(m.w.m,conf.int=TRUE,exponentiate=TRUE,effects="fixed")
 ```
 
@@ -716,7 +718,8 @@ Plot the predicted model and binned data for word memorability and RT (Figure 6D
 ```{r}
 #generate predict model for plotting
 m4.value.w = lmer(rt ~ abs.mem + (abs.mem|ID), 
-           data = choice.low.v.w)
+           data = choice.low.v.w,
+           control=lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 #plot
 p4.w <- ggpredict(m4.value.w, terms = "abs.mem") 
 
@@ -745,7 +748,6 @@ g.deltaMem = choice %>% ggplot(aes(x = abs.mem, fill=..count..))+
   theme_classic(base_size = 12)
 
 g.deltaMem
-
 ```
 
 
