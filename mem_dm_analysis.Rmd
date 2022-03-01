@@ -7,7 +7,6 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#knitr::opts_knit$set(root.dir = 'C:/Users/Christine/Box Sync/data/mem_dm_share/')
 library(tidyverse)
 library(dplyr)
 library(lme4)
@@ -37,10 +36,10 @@ Load code **memorability_analysis.R** to calculate image memorability.
 
 ```{r }
 #load the dictionary for image files and corresponding words
-wordlist = read.csv('C:/Users/Christine/Box Sync/data/mem_dm_share/image_word.csv')
+wordlist = read.csv('data/image_word.csv')
 
 #Load memorability data
-dat = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/Exp1A.csv")
+dat = read.csv("data/Exp1A.csv")
 
 #load and apply function for calculating memorability scores
 source("memorability_analysis.R", local = knitr::knit_global())
@@ -93,7 +92,7 @@ p.image.1000 = plot.data.ran %>% ggplot() +
 p.image.1000
 
 #save image if needed
-#ggsave('C:/Users/Christine/Box Sync/data/mem_dm_all_results/visualization/consistency_im.png', width = 8, height = 6, units = 'in')
+#ggsave('consistency_im.png', width = 8, height = 6, units = 'in')
 
 #save the split-half groups if needed
 #write.csv(mem.scores.1, "split-image-group-1.csv")
@@ -115,7 +114,7 @@ Load the cleaned choice task data from **Exp1B.csv**. The exclusion criteria are
 ```{r, exp1B_load}
 ## Setup for exp2
 #loading data files
-dm.image = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/Exp1B.csv")
+dm.image = read.csv("data/Exp1B.csv")
 
 #select choice trials and preprocess data
 choice = dm.image %>% filter(ttype == 'choice_task')
@@ -379,7 +378,7 @@ Calculate the mean representativeness for each image-word pairs, and tested if i
 
 ```{r}
 #load data for Exp2A (representativeness task)
-dat = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/Exp2A.csv")
+dat = read.csv("data/Exp2A.csv")
 
 #calculate average z-scored rep data for each image/word pairs
 rep = dat %>% filter(ttype == "rep_rating")
@@ -409,7 +408,7 @@ Load the cleaned data from **Exp2B.csv**, and applied function to calculate the 
 
 ```{r}
 #Load memorability data
-dat.w = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/Exp2B.csv")
+dat.w = read.csv("data/Exp2B.csv")
 
 #apply function for calculating memorability scores
 img.values.w = calculate_mem(dat.w) %>% dplyr::rename(word.mem = Memorability)
@@ -446,7 +445,7 @@ hist.mem.word = ggplot(mem, aes(x=word.mem)) +
   theme_classic(base_size = 26)+xlab("Word Memorability")
 
 hist.mem.word
-ggsave('C:/Users/Christine/Box Sync/data/mem_dm_all_results/visualization/hist_word.png', width = 8, height = 6, units = 'in')
+ggsave('hist_word.png', width = 8, height = 6, units = 'in')
 ```
 
 ### Split-half consistency analysis (Figure 5B)
@@ -475,7 +474,7 @@ p.image.1000.w = plot.data.ran %>% ggplot() +
 p.image.1000.w
 
 #save image
-#ggsave('C:/Users/Christine/Box Sync/data/mem_dm_all_results/visualization/consistency_im.png', width = 8, height = 6, units = 'in')
+#ggsave('consistency_im.png', width = 8, height = 6, units = 'in')
 
 #save the split-half groups if needed
 #write.csv(mem.scores.1, "split-word-group-1.csv")
@@ -498,7 +497,7 @@ Load data file from **Exp2C.csv** and preprocess the data.
 ```{r, exp2C_load}
 ## Setup for exp2C
 #loading data files
-dm.word = read.csv("C:/Users/Christine/Box Sync/data/mem_dm_share/Exp2C.csv")
+dm.word = read.csv("data/Exp2C.csv")
 
 #select choice trials and preprocess data
 choice.w = dm.word %>% filter(ttype == 'choice_task')
@@ -757,8 +756,10 @@ g.deltaMem
 g.deltaMem_w = choice.test %>% ggplot(aes(x = abs.mem, fill=..count..))+
   geom_histogram(binwidth = 0.05, show.legend = FALSE)+
   xlim(0,0.8)+
-  xlab(expression(paste("|",Delta*value[word], "|")))+
+  xlab(expression(paste("|",Delta*mem[word], "|")))+
   theme_classic(base_size = 12)
+
+ggsave('C:/Users/Christine/Box Sync/data/mem_dm_all_results/visualization/hist_s2.png',height = 3, width = 5)
 
 g.deltaMem_w
 ``` 
